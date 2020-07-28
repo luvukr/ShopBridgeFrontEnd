@@ -1,0 +1,404 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+@*<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css">*@
+<link rel="stylesheet" type="text/css" href="~/Content/jquery.dataTables.min.css">
+
+
+<script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+
+<style>
+
+    #addProduct {
+        margin: 10px 0 15px 0;
+    }
+    .dataTables_filter, .paging_simple_numbers, .dataTables_length, .dataTables_info {
+        display: none;
+    }
+
+
+</style>
+<div class="container">
+    <div class="panel">
+        <div class="row">
+            <div class="row">
+                <button id="addProduct" class="btn btn-success" data-toggle='modal' data-target='#myModalAdd'>Add new Product</button>
+
+            </div>
+            <div class="row">
+
+                <div class="form-group">
+                    <label class="col-form-label" style="font-weight:bold">Go to page number :</label>
+                    <input type="number" id="pageNumber">
+                    <button id="moveToPageNumber" class="btn btn-success">Go</button>
+
+                    @*<span class="input-group-addon fa fa-pencil-square-o "></span>*@
+
+                </div>
+                <div class="form-group">
+                    <label class="col-form-label" style="font-weight:bold">Set page size (default is set to 2):</label>
+                    <input type="number" id="pageSize">
+                    <button id="setPageSize" class="btn btn-success">Set</button>
+
+                    @*<span class="input-group-addon fa fa-pencil-square-o "></span>*@
+
+                </div>
+            </div>
+
+            <table id="productTable" class="display" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>Product name</th>
+                        <th>Product price</th>
+                        <th>Product Image</th>
+
+                        <th></th>
+
+                        <th></th>
+                        <th></th>
+                        <th style="visibility:hidden"></th>
+
+                    </tr>
+                </thead>
+            </table>
+
+            <button id="prev" style="float:left" class="btn btn-success">Previous</button>
+
+            <button id="next" style="float:right" class="btn btn-success">Next</button>
+        </div>
+        </div>
+    </div>
+<!-- Modal -->
+<div class="modal fade" id="myModalAdd" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" style="text-align:center">Add product </h4>
+            </div>
+            <div class="modal-body">
+                <div class="row" id="productDetail" style="text-align: center;">
+                    <div class="form-group">
+
+                        <span class="fileUpload btn btn-default">
+                            <span class="glyphicon glyphicon-upload"></span> Upload Image
+                            <input type="file" id="addProductImage" />
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label" style="font-weight:bold">Product name :</label>
+                        <input type="text" id="addProductName">
+                        @*<span class="input-group-addon fa fa-pencil-square-o "></span>*@
+
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label" style="font-weight:bold">Product price :</label>
+                        <input type="number" id="addProductPrice">
+                        @*<span class="input-group-addon fa fa-pencil-square-o "></span>*@
+
+                    </div>
+                </div>
+                <div class="row">
+                    <button id="addBtn" style="position: absolute;display: flex;bottom: 2%;right: 2%;z-index: 10;align-items: center;justify-content: center;" class="btn btn-floating btn-success btn-sm">Add</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="modal fade" id="myModalDisplay" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" style="text-align:center">Product detail </h4>
+            </div>
+            <div class="modal-body">
+                <!-- here we create the image dynamically -->
+                <div class="media-left" id="productImg">
+
+                </div>
+                <div class="row" id="productDetail" style="text-align: center;">
+
+                    <div class="row">
+                        <label id="productDesc">Product name :</label>
+
+                    </div>
+                    <div class="row">
+                        <label id="productPrice">Product price :</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="myModalEdit" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Edit product </h4>
+            </div>
+            <div class="modal-body">
+                <!-- here we create the image dynamically -->
+                <div class="media-left" id="editProductImg">
+
+                </div>
+                <div class="row" id="productDetail" style="text-align: center;">
+                    <div class="form-group form-group-sm">
+
+                        <div class="col-sm-4 input-group">
+                            <input type="text" id="editProductId" style="visibility:hidden">
+                            @*<span class="input-group-addon fa fa-pencil-square-o "></span>*@
+
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-form-label" style="font-weight:bold">Product name :</label>
+                        <input type="text" id="editProductName">
+                        @*<span class="input-group-addon fa fa-pencil-square-o "></span>*@
+
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label" style="font-weight:bold">Product price :</label>
+                        <input type="number" id="editProductPrice">
+                        @*<span class="input-group-addon fa fa-pencil-square-o "></span>*@
+
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <button id="editSaveBtn" style="position: absolute;display: flex;bottom: 2%;right: 2%;z-index: 10;align-items: center;justify-content: center;" class="btn btn-floating btn-success btn-sm">Save</button>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    var pageCounter = 0;
+    var pageSize = 2;
+
+    $(function () {
+        $("#productTable").DataTable();
+
+        // Premade test data, you can also use your own
+        loadData(pageCounter);
+
+        
+
+
+    });
+
+    function loadData(pageCounter) {
+        $.ajax({
+            url: "https://localhost:44364/api/products?pageNumber=" + pageCounter + "&pageSize=" + pageSize,
+            type: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            }
+        }).then(function (data) {
+            myJsonData = data;
+            populateDataTable(myJsonData);
+        });
+
+
+
+    }
+
+    // populate the data table with JSON data
+    function populateDataTable(data) {
+
+        console.log("populating data table...");
+        console.log(data);
+
+        // clear the table before populating it with more data
+        //$("#productTable").DataTable().clear();
+        $('#productTable').dataTable().fnClearTable(); 
+        for (var i = 0; i < data.length; i++) {
+            var product = data[i];
+
+            // You could also use an ajax property on the data table initialization
+            $('#productTable').dataTable().fnAddData([
+                product.ProductName,
+                product.Price,
+                "<img src='data:image/jpg;base64," + product.Base64Thumbnil + "' />",
+
+                "<input type='button' value='View' class='btn btn-success viewBtn' data-toggle='modal' data-target='#myModalDisplay' id='view." + product.ProductId + "' />",
+
+                "<input type='button' value='Edit' class='btn btn-success editBtn' data-toggle='modal' data-target='#myModalEdit' id='edit." + product.ProductId + "' />",
+                "<button class='btn btn-danger delBtn' id='del." + product.ProductId + "'>Delete</button>",
+                                "<img src='data:image/jpg;base64," + product.Base64Image + "' style='display: none;' />",
+
+
+            ]);
+        }
+    }
+    $("#productTable").on("click", ".viewBtn", function (e) {
+        $("#productDesc").text("Product name :");
+        $("#productPrice").text("Product price :");
+        $("#productImg").html('');
+        var id = $(this).attr('id').split(".")[1];
+        var productData = $("#productTable").dataTable().fnGetData($(this).closest('tr'));
+
+        $("#productDesc").append(productData[0]);
+        $("#productPrice").append(productData[1]);
+        $("#productImg").html(productData[6]);
+        $("#productImg img").css("display", "block");
+
+
+        //var encodedUrl = "/Home/EditProduct?productId=" + id;
+        //location.href = encodedUrl;
+    });
+    $("#productTable").on("click", ".editBtn", function (e) {
+        $("#editProductName").val('');
+        $("#editProductId").val('');
+
+        $("#editProductPrice").val('');
+        $("#editProductImg").html('');
+        var id = $(this).attr('id').split(".")[1];
+        var productData = $("#productTable").dataTable().fnGetData($(this).closest('tr'));
+        $("#editProductId").val(id);
+
+        $("#editProductName").val(productData[0]);
+        $("#editProductPrice").val(productData[1]);
+        $("#editProductImg").html(productData[6]);
+        $("#editProductImg img").css("display", "block");
+
+
+
+        //var encodedUrl = "/Home/EditProduct?productId=" + id;
+        //location.href = encodedUrl;
+    });
+    $('#editSaveBtn').click(function () {
+        saveProduct($("#editProductId").val());
+
+
+    });
+    $('#addBtn').click(function () {
+        addProduct();
+
+    });
+
+    $('#productTable').on('click', ".delBtn", function () {
+        var id = $(this).attr('id').split(".")[1];
+        deleteProduct(id);
+    });
+
+
+    function deleteProduct(id) {
+        $.ajax({
+            url: "https://localhost:44364/api/products/" + id,
+            type: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            }
+        }).then(function (data) {
+            loadData();
+        });
+
+
+
+    }
+    function saveProduct(id) {
+        var postData = {
+            ProductName: $("#editProductName").val(),
+            Price: $("#editProductPrice").val(),
+            ProductId: id
+        };
+        $.ajax({
+            url: "https://localhost:44364/api/products/" + id,
+            type: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            }, data: JSON.stringify(postData),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+        }).then(function (data) {
+            loadData();
+            $('#myModalEdit').modal('hide');
+
+        });
+
+
+
+    }
+    function addProduct() {
+        var formData = new FormData();
+        formData.append('ProductName', $("#addProductName").val());
+        formData.append('Price', $("#addProductPrice").val());
+        formData.append('file', $("#addProductImage")[0].files[0]);
+
+        for (var key of formData.entries()) {
+            console.log(key[0] + ', ' + key[1]);
+        }
+        $.ajax({
+            url: "https://localhost:44364/api/products/",
+            type: 'POST',
+            enctype: 'multipart/form-data',
+
+            headers: {
+                Accept:"*/*"
+            },
+            contentType: false,
+
+            data: formData,
+            processData: false
+
+        }).then(function (data) {
+            loadData();
+            $('#myModalAdd').modal('hide');
+
+        });
+
+
+
+    }
+
+    $("#next").click(function () {
+        loadData(pageCounter + 1);
+        pageCounter++;
+    });
+
+    $("#prev").click(function () {
+        loadData(pageCounter -1);
+        pageCounter--;
+    });
+
+    $("#moveToPageNumber").click(function () {
+        pageCounter = $('#pageNumber').val();
+        loadData(pageCounter);
+        
+    });
+    $("#setPageSize").click(function () {
+        pageSize = $('#pageSize').val();
+        pageCounter = 0;
+        loadData(pageCounter);  
+
+    });
+
+</script>
